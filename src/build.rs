@@ -3,7 +3,6 @@ use j_lib_rust::env_ext;
 use std::env;
 use std::fmt::{Display, Formatter};
 use std::io::Error;
-use std::path::Path;
 use std::process::{Command, Stdio};
 
 pub enum Device {
@@ -106,21 +105,6 @@ fn default_to_user() -> BuildType {
     println!("the selected build variant is currently unsupported by this script.");
     println!("using default (user) instead");
     BuildType::USER
-}
-
-pub fn get_env_from_envsetup_sh() {
-    require_top();
-    env::set_current_dir(get_top().unwrap()).expect("cannot set current dir");
-    let envsetup_path = Path::new("build").join("envsetup.sh");
-    let output = Command::new("bash")
-        .arg("-c")
-        .arg(format!("source {} && env", envsetup_path.display()))
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-        .wait_with_output()
-        .unwrap();
-    env_ext::parse_env_from_output(output);
 }
 
 pub fn build_aosp(device: Device, build_type: BuildType) {
