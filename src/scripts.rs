@@ -22,8 +22,13 @@ pub fn read_common_sh() -> (String, String, String) {
 }
 
 pub fn read_config_file() -> (String, String, String) {
-    const CONFIG_PATH: &str = "common";
-    let path = env::current_exe().unwrap().parent().unwrap().join(CONFIG_PATH);
+    let config_path: &str;
+    if env::var("IS_CI").unwrap() == "true" {
+        config_path = "../../../../common";
+    } else {
+        config_path = "common";
+    }
+    let path = env::current_exe().unwrap().parent().unwrap().join(config_path);
     let contents = fs::read_to_string(path).expect("Failed to read common.sh");
     let mut graphene_tag = String::new();
     let mut graphene_tag_old = String::new();
