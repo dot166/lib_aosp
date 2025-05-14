@@ -29,6 +29,7 @@ pub fn read_config_file() -> (String, String, String) {
         config_path = "common";
     }
     let path = env::current_exe().unwrap().parent().unwrap().join(config_path);
+    println!("Reading configuration from {}", config_path);
     let contents = fs::read_to_string(path).expect("Failed to read common.sh");
     let mut graphene_tag = String::new();
     let mut graphene_tag_old = String::new();
