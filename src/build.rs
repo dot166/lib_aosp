@@ -3,7 +3,7 @@ use j_lib_rust::env_ext;
 use std::env;
 use std::fmt::{Display, Formatter};
 use std::io::Error;
-use std::process::{Command, Stdio};
+use std::process::Command;
 
 pub enum Device {
     // list of devices natively supported by GrapheneOS (and by extension most aosp forks)
@@ -145,7 +145,6 @@ pub fn build_aosp(device: Device, build_type: BuildType) {
     let output = Command::new("bash")
         .arg("-c")
         .arg(format!("source build/envsetup.sh && lunch {}-cur-{} && sudo rm -rf out && m {} && {}", device, build_type, build_args, extra_args))
-        .stdout(Stdio::piped())
         .spawn()
         .unwrap()
         .wait_with_output()
@@ -168,7 +167,6 @@ pub fn repo_sync() -> Result<(), Error> {
         .arg("-j")
         .arg("16")
         .arg("--force-sync")
-        .stdout(Stdio::piped())
         .spawn()
         .unwrap()
         .wait_with_output()
