@@ -1,5 +1,4 @@
 use crate::utils::*;
-use j_lib_rust::env_ext;
 use std::env;
 use std::fmt::{Display, Formatter};
 use std::io::Error;
@@ -130,13 +129,10 @@ pub fn build_aosp(device: Device, build_type: BuildType) {
     }
     let pixel_args = format!("m otatools-package && script/finalize.sh && script/generate-release.sh {} $BUILD_NUMBER", device);
     let extra_args;
-    let get_env;
     if build_args.is_empty() { // only on emulator
-        extra_args = "clear && env";
-        get_env = true;
+        extra_args = "emulator";
     } else {
         extra_args = pixel_args.as_str();
-        get_env = false;
     }
     let output = Command::new("bash")
         .arg("-c")
@@ -148,10 +144,6 @@ pub fn build_aosp(device: Device, build_type: BuildType) {
 
     if !output.status.success() {
         panic!("Build failed with status: {}", output.status);
-    }
-    
-    if get_env {
-        env_ext::parse_env_from_output(output);
     }
 }
 
