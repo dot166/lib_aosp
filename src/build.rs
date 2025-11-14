@@ -132,6 +132,31 @@ pub fn build_aosp(device: Device, build_type: BuildType) {
     if build_args.is_empty() { // only on emulator
         extra_args = "emulator";
     } else {
+        println!("Building drivers for {}", device);
+        let output = Command::new("bash")
+            .arg("-c")
+            .arg("yarn install --cwd vendor/adevtool/")
+            .spawn()
+            .unwrap()
+            .wait_with_output()
+            .unwrap();
+
+        if !output.status.success() {
+            panic!("adevtool build failed with status: {}", output.status);
+        }
+
+        let output = Command::new("bash")
+            .arg("-c")
+            .arg(format!("vendor/adevtool/bin/run generate-all -d {}", device))
+            .spawn()
+            .unwrap()
+            .wait_with_output()
+            .unwrap();
+
+        if !output.status.success() {
+            panic!("driver build failed with status: {}", output.status);
+        }
+        println!("Finished building drivers for {}", device);
         extra_args = pixel_args.as_str();
     }
     let output = Command::new("bash")
